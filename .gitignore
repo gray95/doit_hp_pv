@@ -1,0 +1,14 @@
+# pixi environments
+.pixi/*
+!.pixi/config.toml
+
+__pycache__/
+.task/
+.env/
+assets/
+cache/
+raw_data/
+intermediary_data/
+
+.doit.*
+
