@@ -20,12 +20,11 @@ def task_download_data():
   output_dir = 'raw_data'
   doi =  '10.5281/zenodo.10719052'
 
-  data_dir = Path(output_dir)
-  raw_data = list(data_dir.glob('*.txt'))
+  output = [os.path.join(output_dir, f"l{NX}t{NX}b{beta}.txt") for NX in lattice_sizes for beta in beta_slugs]
 
   return {
           'actions': [['uvx', 'zenodo_get', '-d', doi, '-o', output_dir]],
-          'targets': raw_data,
+          'targets': output,
           'verbosity': 2
          }
 
@@ -50,7 +49,7 @@ def task_extrapolate_infinite_volume():
         yield {
                 'name': f"{op}:b{beta}:t{time:.1f}",
                 'actions': [['python', script, *inputs, '--output_filename', output, '--operator', op, '--time', f"{time:.1f}"]],
-                'file_dep': raw_data,
+                'file_dep': inputs,
                 'targets': [output],
                 'verbosity': 2 
               }
