@@ -109,4 +109,76 @@ def task_extrapolate_continuum():
                   }
 
                  
-    
+def task_fit_fixed_point():
+  """
+  Placeholder
+  """
+
+  input_dir = os.path.join('intermediary_data', 'continuum_extrapolation')
+  output_dir = os.path.join('intermediary_data', 'fixed_point')
+  os.makedirs(output_dir, exist_ok=True)
+  script = os.path.join('src', 'fit_fixed_point.py')
+
+  fixed_point_g_squareds = np.linspace(4.5, 8.5, 41)
+  
+  for op in operators:
+    for dt in dts:
+      for tmin in ts[dt]['tmins']:
+        for tmax in ts[dt]['tmaxs']:
+          output = os.path.join(output_dir, f"{op}_tmin{tmin}_tmax{tmax}_dt{dt}.json.gz")
+          inputs = [os.path.join(input_dir, f"{op}_gsquared{g2:.1f}_tmin{tmin}_tmax{tmax}_dt{dt}.json.gz") for g2 in fixed_point_g_squareds]
+          yield {
+                  'name': f"{op}:tmin{tmin}:tmax{tmax}:dt{dt}",
+                  'actions': [['python', script, *inputs, '--output_filename', output]],
+                  'file_dep': inputs,
+                  'targets': [output],
+                  'verbosity': 2
+                }
+
+def task_plot_volume_extrapolation():
+  """
+  Plot infinite volume extrapolation of flowed coupling and beta for different bare betas and the
+  plaquette and symmetric operators.
+  """
+  input_dir = os.path.join('intermediary_data', 'infinite_volume')
+  output_dir = os.path.join('assets', 'plots')
+  os.makedirs(output_dir, exist_ok=True)
+  script = os.path.join('src', 'plot_infinite_volume_extrapolation.py')
+
+  plot_beta_slugs = [960, 980, 102]
+  plot_times = [2.5, 3.5, 4.5, 6.0]
+
+  for op in operators:
+    output = os.path.join(output_dir, f"volume_extrapolation_{op}.pdf")
+    inputs = [os.path.join(input_dir, f"b{beta}_t{time:.1f}_{op}.json.gz") for beta in plot_beta_slugs for time in plot_times]
+    yield {
+            'name': f"{op}",
+            'actions': [['python', script, *inputs, '--output_filename', output, '--plot_styles', plot_styles]],
+            'file_dep': inputs,
+            'targets': [output],
+            'verbosity': 2
+          }
+
+def task_plot_finite_a_interpolation():
+  """
+  Plot interpolation of beta against squared coupling at various t/a^2.
+  """
+  input_dir = os.path.join('intermediary_data', 'beta_interpolation')
+  output_dir = os.path.join('assets', 'plots')
+  os.makedirs(output_dir, exist_ok=True)
+  script = os.path.join('src', 'plot_beta_against_g2.py')
+
+  plot_times = [2.5, 3.5, 4.5, 6.0]
+
+  for op in operators:
+    output = os.path.join(output_dir, f"beta_interpolation_finite_a_{op}.pdf")
+    inputs = [os.path.join(input_dir, f"t{time:.1f}_{op}.json.gz") for time in plot_times]
+    yield {
+            'name': f"{op}",
+            'actions': [['python', script, *inputs, '--plot_filename', output, '--plot_styles', plot_styles]],
+            'file_dep': inputs,
+            'targets': [output],
+            'verbosity': 2
+          }
+
+
