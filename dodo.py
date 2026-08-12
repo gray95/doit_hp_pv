@@ -13,6 +13,22 @@ times = np.arange(2.5, 6.7, 0.1)
 
 interpolate_fit_order = 4
 
+def task_download_data():
+  """
+  Download raw data release from zenodo.
+  """
+  output_dir = 'raw_data'
+  doi =  '10.5281/zenodo.10719052'
+
+  data_dir = Path(output_dir)
+  raw_data = list(data_dir.glob('*.txt'))
+
+  return {
+          'actions': [['uvx', 'zenodo_get', '-d', doi, '-o', output_dir]],
+          'targets': raw_data,
+          'verbosity': 2
+         }
+
 def task_extrapolate_infinite_volume():
   """
   compute infinite volume extrapolation
