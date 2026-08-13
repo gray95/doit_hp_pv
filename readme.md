@@ -6,24 +6,21 @@ The open source [data](https://zenodo.org/records/10719052) used in this workflo
 ## Requirements
 - [pixi](https://pixi.prefix.dev/latest/installation)
 - [Git](https://github.com/git-guides/install-git)
+- [LaTeX] for the plots
 
-`doit`, `pyerrors`, `matplotlib` and the other packages will be installed by `pixi` during setup.
+`doit`, `pyerrors`, `matplotlib` and the other packages will be installed when you first execute `pixi run`.
 
 ## Setup
 
 Clone this repo and `cd` into it
 
-```
-pixi install 
-```
-
 ## Running
 
 ```
-pixi run doit 
+pixi run doit -n <N>
 ```
 
-With the default `--concurrency 6` this workflow takes ?? mins to run end-to-end on an AMD Ryzen 5 5600. On a laptop with an Intel i7-8565U it takes ?? mins.
+With `N=6` this workflow takes ?? mins to run end-to-end on an AMD Ryzen 5 5600. On a laptop with an Intel i7-8565U it takes ?? mins.
 
 The plots produced by the workflow are placed in `assets/`
 
@@ -31,13 +28,13 @@ The plots produced by the workflow are placed in `assets/`
 
 Manually set the number of parallel processes with
 ```
-pixi run doit -n <N>
+pixi run doit list
 ```
 ### Notes
 
 
 ### To-Do
-- [ ] implement all steps in `dodo.py` 
+- [x] implement all steps in `dodo.py` 
 - [ ] confirm wflow runs end-to-end.
 - [ ] check reproducible over different machines/OSes.
 - [ ] speed up wflow, takes a couple hours end-to-end at present.
