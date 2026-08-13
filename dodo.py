@@ -10,7 +10,7 @@ lattice_sizes = [24, 28, 32, 36, 40]
 beta_slugs = [920, 940, 960, 980, 100, 102, 104, 108, 110, 114, 120, 128, 136, 146]
 operators = ["plaq", "sym"]
 times = np.arange(2.5, 6.8, 0.1) # does not include 6.8
-gsquared = np.arange(1.8, 10.4, 0.1)
+gsquared = np.arange(1.8, 10.5, 0.1)
 
 interpolate_fit_order = 4
 
@@ -180,5 +180,66 @@ def task_plot_finite_a_interpolation():
             'targets': [output],
             'verbosity': 2
           }
+
+def task_plot_continuum_beta():
+  """
+  Plot continuum beta function for the SU(3) theory with 12 fundamental flavours.
+  """
+  input_dir = os.path.join('intermediary_data', 'continuum_extrapolation')
+  output_dir = os.path.join('assets', 'plots')
+  os.makedirs(output_dir, exist_ok=True)
+  script = os.path.join('src', 'plot_beta_against_g2_continuum.py')
+
+  output = os.path.join(output_dir, "continuum_betafunction.pdf")
+  inputs = [os.path.join(input_dir, f"{op}_gsquared{g2:.1f}_tmin3.5_tmax6.0_dt0.2.json.gz") for op in operators for g2 in gsquared]
+  return {
+          'actions': [['python', script, *inputs, '--plot_filename', output, '--plot_styles', plot_styles]],
+          'file_dep': inputs,
+          'targets': [output],
+          'verbosity': 2
+        }
+
+def task_plot_continuum_extrapolation():
+  """
+  Plot continuum extrapolation of beta at fixed coupling.
+  """
+  input_dir = os.path.join('intermediary_data', 'continuum_extrapolation')
+  output_dir = os.path.join('assets', 'plots')
+  os.makedirs(output_dir, exist_ok=True)
+  script = os.path.join('src', 'plot_continuum_extrapolation.py')
+
+  plot_g_squareds = [2.0, 4.0, 6.0, 8.0]
+  plot_tick_times = ['2.0', '2.5', '3.5', '4.5', '6.0']
+
+  output = os.path.join(output_dir, "continuum_extrapolation.pdf")
+
+  fit_data = [os.path.join(input_dir, f"{op}_gsquared{g2:.1f}_tmin3.5_tmax6.0_dt0.2.json.gz") for op in operators for g2 in plot_g_squareds]
+  unfit_data = [os.path.join(input_dir, f"{op}_gsquared{g2:.1f}_tmin2.5_tmax6.8_dt0.2.json.gz") for op in operators for g2 in plot_g_squareds]
+
+  return {
+          'actions': [['python', script, *fit_data, '--unfit_filenames', *unfit_data, '--tick_times', *plot_tick_times, '--output_file', output, '--plot_styles', plot_styles]],
+          'file_dep': fit_data+unfit_data,
+          'targets': [output],
+          'verbosity': 2
+         }
+
+def task_plot_fixed_point_scan():
+  """
+  Plot RG fixed point and its leading irrelevant critical exponent for different values of tmax.
+  """
+  input_dir = os.path.join('intermediary_data', 'fixed_point')
+  output_dir = os.path.join('assets', 'plots')
+  os.makedirs(output_dir, exist_ok=True)
+  script = os.path.join('src', 'plot_fixed_point_scan.py')
+
+  output = os.path.join(output_dir, "fixed_point_scan.pdf")
+  inputs = [os.path.join(input_dir, f"{op}_tmin{tmin}_tmax{tmax}_dt0.1.json.gz") for op in operators for tmin in ts[0.1]['tmins'] for tmax in ts[0.1]['tmaxs']]
+
+  return {
+          'actions': [['python', script, *inputs, '--plot_filename', output, '--plot_styles', plot_styles]],
+          'file_dep': inputs,
+          'targets': [output],
+          'verbosity': 2
+        }
 
 
