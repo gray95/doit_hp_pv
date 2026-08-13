@@ -13,6 +13,9 @@ The open source [data](https://zenodo.org/records/10719052) used in this workflo
 ## Setup
 
 Clone this repo and `cd` into it
+```
+git clone https://github.com/gray95/doit_hp_pv.git && cd doit_hp_pv
+```
 
 ## Running
 
@@ -20,13 +23,12 @@ Clone this repo and `cd` into it
 pixi run doit -n <N>
 ```
 
-With `N=6` this workflow takes ?? mins to run end-to-end on an AMD Ryzen 5 5600. On a laptop with an Intel i7-8565U it takes ?? mins.
+With `N=6` this workflow takes ~34 mins to run end-to-end on an AMD Ryzen 5 5600. On a laptop with an Intel i7-8565U it takes ?? mins.
 
 The plots produced by the workflow are placed in `assets/`
 
-### Useful task commands
+### Useful commands
 
-Manually set the number of parallel processes with
 ```
 pixi run doit list
 ```
@@ -35,7 +37,7 @@ pixi run doit list
 
 ### To-Do
 - [x] implement all steps in `dodo.py` 
-- [ ] confirm wflow runs end-to-end.
+- [x] confirm wflow runs end-to-end.
 - [ ] check reproducible over different machines/OSes.
 - [ ] speed up wflow, takes a couple hours end-to-end at present.
 - [ ] submit wflow as a slurm job to a remote cluster.
